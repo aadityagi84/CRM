@@ -33,13 +33,13 @@ const signUpController = async (req, res) => {
     res.status(201).json({
       success: true,
       message: "User registered successfully.",
-      user: {
-        _id: newUser._id,
-        name: newUser.name,
-        email: newUser.email,
-        password: newUser.password,
-        role: newUser.role,
-      },
+      // user: {
+      //   _id: newUser._id,
+      //   name: newUser.name,
+      //   email: newUser.email,
+      //   password: newUser.password,
+      //   role: newUser.role,
+      // },
     });
   } catch (error) {
     console.log("Error from SignUp", error);

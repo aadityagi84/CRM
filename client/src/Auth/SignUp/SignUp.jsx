@@ -1,6 +1,8 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { userRegister } from "../../api/user.login.api";
+import toast from "react-hot-toast";
+import { useAuth } from "../../context/AuthContext";
 
 const SignUp = () => {
   const [form, setForm] = useState({
@@ -8,16 +10,27 @@ const SignUp = () => {
     email: "",
     password: "",
   });
-
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  if (user) {
+    return navigate("/dashboard");
+  }
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
       const rs = await userRegister({ formdata: form });
       console.log(rs);
+      if (rs.success === false) {
+        toast.error(rs.message || "Registration failed.");
+        return;
+      }
+      toast.success("Registration successful! Please login.");
+      setForm({ name: "", email: "", password: "" });
     } catch (error) {
       console.error("Error during form submission:", error);
     }
   };
+
   return (
     <div>
       <div className="min-h-screen bg-gray-100 text-gray-900 flex justify-center">

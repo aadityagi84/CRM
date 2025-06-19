@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { userLogin } from "../../api/user.login.api";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import Cookiee from "js-cookie";
 
 // LoginForm.jsx
 const LoginForm = () => {
@@ -8,10 +10,28 @@ const LoginForm = () => {
     email: "",
     password: "",
   });
+  const { login, user } = useAuth();
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (user) {
+      return navigate("/dashboard");
+    }
+  }, [user]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await userLogin({ formdata: form });
+      const rs = await userLogin({ formdata: form });
+      console.log(rs);
+      if (rs.success === true) {
+        Cookiee.set("token", rs.token, { expires: 1 }); // Set token in cookies
+        Cookiee.set("user", JSON.stringify(rs.user), { expires: 1 }); //
+        login({ userdata: rs.token, userdetails: rs.user });
+        setForm({
+          email: "",
+          password: "",
+        });
+      }
     } catch (error) {
       console.error("Error during form submission:", error);
     }
